@@ -12,6 +12,7 @@ import humidity_icon from "../assets/humidity.png";
 export default function Weather() {
   const inputRef = useRef();
   const [weatherData, setWeatherData] = useState(false);
+  const [darkMode, setDarkMode] = useState(true); // 🌗 Toggle state
 
   const allIcons = {
     "01d": clear_icon,
@@ -31,7 +32,7 @@ export default function Weather() {
   };
 
   const search = async (city) => {
-    if (city == "") {
+    if (city === "") {
       alert("Please enter a city name");
       return;
     }
@@ -41,14 +42,12 @@ export default function Weather() {
       }`;
 
       const response = await fetch(url);
-
       const data = await response.json();
 
       if (!response.ok) {
         alert(data.message);
         return;
       }
-      console.log(data);
 
       const icon = allIcons[data.weather[0].icon] || clear_icon;
       setWeatherData({
@@ -69,7 +68,7 @@ export default function Weather() {
   }, []);
 
   return (
-    <div className="weather">
+    <div className={`weather ${darkMode ? "dark" : "light"}`}>
       <div className="search-bar">
         <input ref={inputRef} type="text" placeholder="Search" />
         <img
@@ -79,13 +78,11 @@ export default function Weather() {
         />
       </div>
 
-      {weatherData ? (
+      {weatherData && (
         <>
-          <img src={weatherData.icon} alt="clear" className="weather-icon" />
-
+          <img src={weatherData.icon} alt="weather" className="weather-icon" />
           <p className="temperature">{weatherData.temperature}°c</p>
           <p className="location">{weatherData.location}</p>
-
           <div className="weather-data">
             <div className="col">
               <img src={humidity_icon} alt="humidity" />
@@ -103,9 +100,12 @@ export default function Weather() {
             </div>
           </div>
         </>
-      ) : (
-        <></>
       )}
+
+      {/* Toggle Icon Positioned Absolutely */}
+      <button className="toggle-btn" onClick={() => setDarkMode(!darkMode)}>
+        {darkMode ? "☀️" : "🌙"}
+      </button>
     </div>
   );
 }
